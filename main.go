@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
 
@@ -13,16 +14,21 @@ import (
 // https://github.com/ethereum/go-ethereum/wiki/Peer-to-Peer
 func main() {
 
+	ip := *flag.String("ip", "127.0.0.1", "The node address")
+	name := *flag.String("name", "testName", "The node name")
+	port := *flag.String("port", "30300", "The default port")
+
 	nodekey, _ := crypto.GenerateKey()
 	srv := p2p.Server{
 		Config: p2p.Config{
 			MaxPeers:   10,
 			PrivateKey: nodekey,
-			Name:       "my node name",
-			ListenAddr: ":30300",
+			Name:       name,
+			ListenAddr: fmt.Sprintf("%s:%s", ip, port),
 			Protocols:  []p2p.Protocol{MyProtocol()},
 		},
 	}
+
 	if err := srv.Start(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
